@@ -2,12 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ShoppingCart, Star } from "lucide-react";
-import type { product } from "@/types/product";
+import type { Product } from "@/types/product";
 import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
 
 interface ProductCardProps {
-  product: product;
+  product: Product;
   index: number;
 }
 
@@ -17,7 +18,7 @@ export default function ProductCard({
   index,
 }: ProductCardProps) {
     
-    const dispatch = useDispatch();
+    const dispatch = useDispatch <AppDispatch>();
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -70,7 +71,7 @@ export default function ProductCard({
           </div>
 
           <span className="text-sm text-muted">
-            ({product.review})
+            ({product.reviews})
           </span>
         </div>
 
@@ -90,7 +91,7 @@ export default function ProductCard({
 
           <button
             aria-label={`Add ${product.name} to cart`}
-            onClick={() => dispatch(addToCart(product))}
+            onClick={() => dispatch(addToCart({ product }))}
             className="rounded-full bg-primary p-3 text-black transition hover:bg-primary-hover"
           >
             <ShoppingCart size={18} />
