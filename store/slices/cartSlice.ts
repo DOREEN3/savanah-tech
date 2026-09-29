@@ -21,42 +21,47 @@ const cartSlice = createSlice({
 
   reducers: {
     addToCart: (
-      state,
-      action: PayloadAction<{
-        product: Product;
-        variant?: ProductVariant;
-      }>
-    ) => {
-      const { product, variant } = action.payload;
+  state,
+  action: PayloadAction<{
+    product: Product;
+    variant?: ProductVariant;
+    quantity?: number;
+  }>
+) => {
+  const {
+    product,
+    variant,
+    quantity = 1,
+  } = action.payload;
 
-      const existingItem = state.items.find((item) => {
-        if (item.product.id !== product.id) {
-          return false;
-        }
+  const existingItem = state.items.find((item) => {
+    if (item.product.id !== product.id) {
+      return false;
+    }
 
-        if (!variant && !item.variant) {
-          return true;
-        }
+    if (!variant && !item.variant) {
+      return true;
+    }
 
-        if (!variant || !item.variant) {
-          return false;
-        }
+    if (!variant || !item.variant) {
+      return false;
+    }
 
-        return variant.id === item.variant.id;
-      });
+    return variant.id === item.variant.id;
+  });
 
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        state.items.push({
-          product,
-          variant,
-          quantity: 1,
-        });
-      }
-    },
+  if (existingItem) {
+    existingItem.quantity += quantity;
+  } else {
+    state.items.push({
+      product,
+      variant,
+      quantity,
+    });
+  }
+},
 
-    removeFromCart: (
+  removeFromCart: (
       state,
       action: PayloadAction<{
         productId: number;
@@ -108,6 +113,13 @@ const cartSlice = createSlice({
       }
     },
 
+    hydrateCart:(
+      state,
+      action:PayloadAction<CartItem[]>
+    )=>{
+      state.items = action.payload;
+    },
+
     clearCart: (state) => {
       state.items = [];
     },
@@ -118,6 +130,7 @@ export const {
   addToCart,
   removeFromCart,
   updateQuantity,
+  hydrateCart,
   clearCart,
 } = cartSlice.actions;
 

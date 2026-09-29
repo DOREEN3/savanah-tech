@@ -2,10 +2,15 @@
 
 import { motion } from "framer-motion";
 import { ShoppingCart, Star } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import type { MouseEvent } from "react";
 import type { Product } from "@/types/product";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import type { AppDispatch } from "@/store";
 import { addToCart } from "@/store/slices/cartSlice";
+
 
 interface ProductCardProps {
   product: Product;
@@ -17,8 +22,23 @@ export default function ProductCard({
   product,
   index,
 }: ProductCardProps) {
-    
-    const dispatch = useDispatch <AppDispatch>();
+    const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  const handleAddToCart = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Variable products need a variant selected on the details page.
+    if (product.type === "variable") {
+      router.push(`/products/${product.id}`);
+      return;
+    }
+
+    dispatch(addToCart({ product, quantity: 1 }));
+    toast.success(`${product.name} added to cart`);
+  };
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -89,13 +109,11 @@ export default function ProductCard({
             )}
           </div>
 
-          <button
-            aria-label={`Add ${product.name} to cart`}
-            onClick={() => dispatch(addToCart({ product }))}
-            className="rounded-full bg-primary p-3 text-black transition hover:bg-primary-hover"
-          >
-            <ShoppingCart size={18} />
-          </button>
+       <Link href={`/products/${product.id}`}
+  className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-black transition hover:bg-primary-hover"
+>
+  View Product
+</Link>
         </div>
       </div>
     </motion.article>
